@@ -34,7 +34,7 @@ def load_weights(model, weights_file):
         k_size = conv_layer.kernel_size[0]
         in_dim = conv_layer.input_shape[-1]
 
-        if i not in [58, 66, 74]:
+        if i not in [58, 66, 74]:  ## 指 conv_sbbox, conv_mbbox, conv_lbbox 三层
             # darknet weights: [beta, gamma, mean, variance]
             bn_weights = np.fromfile(wf, dtype=np.float32, count=4 * filters)
             # tf weights: [gamma, beta, mean, variance]

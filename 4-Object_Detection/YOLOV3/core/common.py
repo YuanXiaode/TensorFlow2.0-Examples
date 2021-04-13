@@ -13,6 +13,8 @@
 
 import tensorflow as tf
 
+## 理解请见网址：https://blog.csdn.net/Strive_For_Future/article/details/115243512
+## 但我还是不知道他在做啥
 class BatchNormalization(tf.keras.layers.BatchNormalization):
     """
     "Frozen state" and "inference mode" are two separate concepts.
@@ -26,6 +28,7 @@ class BatchNormalization(tf.keras.layers.BatchNormalization):
         training = tf.logical_and(training, self.trainable)
         return super().call(x, training)
 
+## 2.0的training会自己调的，因此就不传参数了
 def convolutional(input_layer, filters_shape, downsample=False, activate=True, bn=True):
     if downsample:
         input_layer = tf.keras.layers.ZeroPadding2D(((1, 0), (1, 0)))(input_layer)
