@@ -41,8 +41,9 @@ for i, conv_tensor in enumerate(conv_tensors):
 model = tf.keras.Model(input_tensor, output_tensors)
 optimizer = tf.keras.optimizers.Adam()
 if os.path.exists(logdir): shutil.rmtree(logdir)
-writer = tf.summary.create_file_writer(logdir)
+writer = tf.summary.create_file_writer(logdir)  ## 注意这里的summary用法和1.x的区别
 
+# tf2.0不用滑动平均？
 def train_step(image_data, target):
     with tf.GradientTape() as tape:
         pred_result = model(image_data, training=True)
