@@ -25,6 +25,8 @@ def load_weights(model, weights_file):
     major, minor, revision, seen, _ = np.fromfile(wf, dtype=np.int32, count=5)
 
     j = 0
+    ## 算了一下，backbone 共有52个conv2d层和52个batch_normalization层；
+    ## neck 有23个conv2d层和20个batch_normalization层；
     for i in range(75):
         conv_layer_name = 'conv2d_%d' %i if i > 0 else 'conv2d'
         bn_layer_name = 'batch_normalization_%d' %j if j > 0 else 'batch_normalization'
@@ -34,7 +36,7 @@ def load_weights(model, weights_file):
         k_size = conv_layer.kernel_size[0]
         in_dim = conv_layer.input_shape[-1]
 
-        if i not in [58, 66, 74]:  ## 指 conv_sbbox, conv_mbbox, conv_lbbox 三层
+        if i not in [58, 66, 74]:  ## 指 conv_sbbox, conv_mbbox, conv_lbbox ，这三层没有BN层
             # darknet weights: [beta, gamma, mean, variance]
             bn_weights = np.fromfile(wf, dtype=np.float32, count=4 * filters)
             # tf weights: [gamma, beta, mean, variance]

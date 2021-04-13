@@ -18,15 +18,15 @@ import core.utils as utils
 import tensorflow as tf
 from core.yolov3 import YOLOv3, decode
 
-
 video_path      = "./docs/road.mp4"
 # video_path      = 0
 num_classes     = 80
 input_size      = 416
 
+# 这里我用tf2.3比tf2.1慢了3ms，不知为何
 input_layer  = tf.keras.layers.Input([input_size, input_size, 3])
 feature_maps = YOLOv3(input_layer)
-
+print(tf.test.is_gpu_available())
 bbox_tensors = []
 for i, fm in enumerate(feature_maps):
     bbox_tensor = decode(fm, i)

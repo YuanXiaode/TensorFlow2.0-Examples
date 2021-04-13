@@ -26,6 +26,9 @@ image_path   = "./docs/kite.jpg"
 
 input_layer  = tf.keras.layers.Input([input_size, input_size, 3])
 feature_maps = YOLOv3(input_layer)
+print(tf.test.is_gpu_available())
+for layer in feature_maps:
+    print(layer.name)
 
 original_image      = cv2.imread(image_path)
 original_image      = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
@@ -39,7 +42,7 @@ for i, fm in enumerate(feature_maps):
     bbox_tensor = decode(fm, i)
     bbox_tensors.append(bbox_tensor)
 
-
+model = tf.keras.Model(input_layer, bbox_tensors)
 utils.load_weights(model, "./yolov3.weights")
 model.summary()
 
