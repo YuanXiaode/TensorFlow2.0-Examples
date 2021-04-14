@@ -83,14 +83,16 @@ def decode(conv_output, i=0):
     conv_raw_conf = conv_output[:, :, :, :, 4:5]
     conv_raw_prob = conv_output[:, :, :, :, 5: ]
 
-    y = tf.tile(tf.range(output_size, dtype=tf.int32)[:, tf.newaxis], [1, output_size])
+    ## emm,有现成函数tf.meshgrid了解下？
+    y = tf.tile(tf.range(output_size, dtype=tf.int32)[:, tf.newaxis], [1, output_size])  ## (output_size,output_size)
     x = tf.tile(tf.range(output_size, dtype=tf.int32)[tf.newaxis, :], [output_size, 1])
 
-    xy_grid = tf.concat([x[:, :, tf.newaxis], y[:, :, tf.newaxis]], axis=-1)
-    xy_grid = tf.tile(xy_grid[tf.newaxis, :, :, tf.newaxis, :], [batch_size, 1, 1, 3, 1])
+    xy_grid = tf.concat([x[:, :, tf.newaxis], y[:, :, tf.newaxis]], axis=-1)  ## (output_size,output_size,2)
+    ## 这里其实用 xy_grid = xy_grid[tf.newaxis, :, :, tf.newaxis, :]就行，后面相加时利用广播特性
+    xy_grid = tf.tile(xy_grid[tf.newaxis, :, :, tf.newaxis, :], [batch_size, 1, 1, 3, 1])  ## (batch_size,output_size,output_size,3,2)
     xy_grid = tf.cast(xy_grid, tf.float32)
 
-    pred_xy = (tf.sigmoid(conv_raw_dxdy) + xy_grid) * STRIDES[i]
+    pred_xy = (tf.sigmoid(conv_raw_dxdy) + xy_grid) * STRIDES[i]  ## Feature scale -> input scale
     pred_wh = (tf.exp(conv_raw_dwdh) * ANCHORS[i]) * STRIDES[i]
     pred_xywh = tf.concat([pred_xy, pred_wh], axis=-1)
 
@@ -189,6 +191,7 @@ def compute_loss(pred, conv, label, bboxes, i=0):
 
     prob_loss = respond_bbox * tf.nn.sigmoid_cross_entropy_with_logits(labels=label_prob, logits=conv_raw_prob)
 
+    ## after tf.reduce_sum , the shape is (batch,)
     giou_loss = tf.reduce_mean(tf.reduce_sum(giou_loss, axis=[1,2,3,4]))
     conf_loss = tf.reduce_mean(tf.reduce_sum(conf_loss, axis=[1,2,3,4]))
     prob_loss = tf.reduce_mean(tf.reduce_sum(prob_loss, axis=[1,2,3,4]))
