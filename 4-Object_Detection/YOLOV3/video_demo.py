@@ -48,6 +48,7 @@ while True:
 
     prev_time = time.time()
     pred_bbox = model.predict_on_batch(image_data)
+    # pred_bbox = model.predict(image_data)
     curr_time = time.time()
     exec_time = curr_time - prev_time
 
@@ -65,6 +66,8 @@ while True:
     result = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
     cv2.imshow("result", result)
     if cv2.waitKey(1) & 0xFF == ord('q'): break
+
+
 
 
 
